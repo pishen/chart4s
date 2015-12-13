@@ -7,14 +7,15 @@ function updateSocket() {
     }
     socket.onmessage = function(event){
         var json = JSON.parse(event.data)
+        console.log(json)
         if (json.msgType == ""){
             //TODO
         }
     }
-    socket.onclose = function(){
-        console.log("websocket closed.")
-        setTimeout(updateSocket, 3000)
-    }
+    /* socket.onclose = function(){
+       console.log("websocket closed.")
+       setTimeout(updateSocket, 3000)
+       } */
 }
 
 updateSocket()
