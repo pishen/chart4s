@@ -1,6 +1,8 @@
 package chart4s
 
 import play.api.BuiltInComponents
+import play.api.inject.NewInstanceInjector
+import play.api.inject.SimpleInjector
 import play.api.routing.Router
 import play.core.server._
 import play.api.routing.sird._
@@ -29,6 +31,9 @@ class ChartServer() {
         Client.props(out, hub)
       }
     }
+    
+    //BUG: https://groups.google.com/d/msg/play-framework/wHOH-MyEsfU/YneNmpL3wowJ
+    override lazy val injector = new SimpleInjector(NewInstanceInjector) + router + crypto + httpConfiguration + actorSystem
   }
   val server = components.server
 }
