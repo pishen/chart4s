@@ -1,39 +1,45 @@
 package chart4s
 
-import play.api.BuiltInComponents
-import play.api.inject.NewInstanceInjector
-import play.api.inject.SimpleInjector
-import play.api.routing.Router
-import play.core.server._
-import play.api.routing.sird._
-import play.api.mvc._
-import play.twirl.api._
-import scala.io.Source
 import akka.actor._
+import play.api.BuiltInComponents
+import play.api.http.ContentTypes._
+import play.api.inject.{NewInstanceInjector, SimpleInjector}
+import play.api.libs.json._
+import play.api.mvc._
+import play.api.routing.Router
+import play.api.routing.sird._
+import play.core.server._
+import scala.io.Source
 
-class ChartServer() {
-  val components = new NettyServerComponents with BuiltInComponents {
-    implicit val app = application
-    val hub = actorSystem.actorOf(Props[Hub], "hub")
-    
-    lazy val router = Router.from {
-      case GET(p"/") => Action {
-        val htmlStr = Source.fromInputStream(getClass().getResourceAsStream("/template.html")).getLines().mkString
-        val html = Html(htmlStr)
-        Results.Ok(html)
-      }
-      case GET(p"/template.js") => Action {
-        val jsStr = Source.fromInputStream(getClass().getResourceAsStream("/template.js")).getLines().mkString("\n")
-        val js = JavaScript(jsStr)
-        Results.Ok(js)
-      }
-      case GET(p"/socket") => WebSocket.acceptWithActor[String, String] { request => out =>
-        Client.props(out, hub)
-      }
-    }
-    
-    //BUG: https://groups.google.com/d/msg/play-framework/wHOH-MyEsfU/YneNmpL3wowJ
-    override lazy val injector = new SimpleInjector(NewInstanceInjector) + router + crypto + httpConfiguration + actorSystem
+class ChartServer() extends NettyServerComponents with BuiltInComponents {
+  implicit lazy val app = application
+  private lazy val hub = actorSystem.actorOf(Props[Hub], "hub")
+  
+  private def getResource(path: String) = {
+    Source.fromInputStream(getClass().getResourceAsStream(path)).mkString
   }
-  val server = components.server
+
+  lazy val router = Router.from {
+    case GET(p"/") => Action {
+      Results.Ok(getResource("/template.html")).as(HTML)
+    }
+    case GET(p"/assets/$file") => Action {
+      Results.Ok(getResource("/" + file))
+    }
+    case GET(p"/socket") => WebSocket.acceptWithActor[String, String] { request =>
+      out => Client.props(out, hub)
+    }
+  }
+
+  //BUG: https://groups.google.com/d/msg/play-framework/wHOH-MyEsfU/YneNmpL3wowJ
+  override lazy val injector = new SimpleInjector(NewInstanceInjector) + router + crypto + httpConfiguration + actorSystem
+
+  def broadcast(json: JsValue) = {
+    hub ! Hub.Broadcast(Client.Send(json))
+  }
+  
+  def stop() = server.stop
+  
+  //trigger the server
+  server
 }
