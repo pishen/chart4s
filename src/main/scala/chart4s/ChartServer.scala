@@ -14,7 +14,7 @@ import scala.io.Source
 class ChartServer() extends NettyServerComponents with BuiltInComponents {
   implicit lazy val app = application
   private lazy val hub = actorSystem.actorOf(Props[Hub], "hub")
-  
+
   private def getResource(path: String) = {
     Source.fromInputStream(getClass().getResourceAsStream(path)).mkString
   }
@@ -24,11 +24,18 @@ class ChartServer() extends NettyServerComponents with BuiltInComponents {
       Results.Ok(getResource("/template.html")).as(HTML)
     }
     case GET(p"/assets/$file") => Action {
-      Results.Ok(getResource("/" + file))
+      val res = Results.Ok(getResource("/" + file))
+      if (file.endsWith(".html")) {
+        res.as(HTML)
+      } else if (file.endsWith(".css")) {
+        res.as(CSS)
+      } else if (file.endsWith(".js")) {
+        res.as(JAVASCRIPT)
+      } else {
+        res
+      }
     }
-    case GET(p"/socket") => WebSocket.acceptWithActor[String, String] { request =>
-      out => Client.props(out, hub)
-    }
+    case GET(p"/socket") => WebSocket.acceptWithActor[String, String] { request => out => Client.props(out, hub) }
   }
 
   //BUG: https://groups.google.com/d/msg/play-framework/wHOH-MyEsfU/YneNmpL3wowJ
@@ -37,9 +44,9 @@ class ChartServer() extends NettyServerComponents with BuiltInComponents {
   def broadcast(json: JsValue) = {
     hub ! Hub.Broadcast(Client.Send(json))
   }
-  
+
   def stop() = server.stop
-  
+
   //trigger the server
   server
 }
