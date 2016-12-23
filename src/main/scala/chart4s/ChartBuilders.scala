@@ -6,14 +6,23 @@ object ChartBuilders {
   implicit class DoubleSeqConverter(seq: Seq[Double]) {
     def toLineChart = {
       val json = Json.obj("data" -> Json.obj(
-        "json" -> Json.obj("line1" -> seq)
+        "json" -> Json.obj("data1" -> seq)
       ))
       new LineChart(json)
+    }
+    
+    def toBarChart = {
+      val json = Json.obj("data" -> Json.obj(
+        "json" -> Json.obj("data1" -> seq),
+        "type" -> "bar"
+      ))
+      new Chart(json)
     }
   }
 
   implicit class IntSeqConverter(seq: Seq[Int]) {
     def toLineChart = seq.map(_.toDouble).toLineChart
+    def toBarChart = seq.map(_.toDouble).toBarChart
   }
 
   implicit class DoubleMapConverter(map: Map[String, Double]) {
