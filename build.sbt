@@ -1,10 +1,12 @@
-lazy val root = (project in file(".")).settings(
-  name := "chart4s",
-  version := "0.1.0-SNAPSHOT",
-  scalaVersion := "2.11.7",
-  organization := "net.pishen",
-  libraryDependencies ++= Seq(
-    "com.typesafe.play" %% "play" % "2.4.4",
-    "com.typesafe.play" %% "play-netty-server" % "2.4.4"
-  )
+name := "chart4s"
+
+version := "0.1.0"
+
+scalaVersion := "2.11.8"
+
+libraryDependencies ++= Seq(
+  "com.github.japgolly.scalacss" %% "core" % "0.5.1",
+  "com.github.pathikrit" %% "better-files" % "2.17.1",
+  "com.lihaoyi" %% "scalatags" % "0.6.1",
+  "com.typesafe.play" %% "play-json" % "2.5.12"
 )
