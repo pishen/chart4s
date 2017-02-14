@@ -9,3 +9,7 @@ libraryDependencies ++= Seq(
   "com.lihaoyi" %% "scalatags" % "0.6.1",
   "com.typesafe.play" %% "play-json" % "2.5.12"
 )
+
+organization := "net.pishen"
+
+licenses += ("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.html"))
