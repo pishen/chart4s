@@ -18,7 +18,7 @@ resolvers += Resolver.bintrayRepo("pishen", "maven")
 
 Then, add the import statements to your code:
 
-```
+```scala
 import chart4s._
 import chart4s.c3._
 ```
@@ -27,7 +27,7 @@ import chart4s.c3._
 
 ### Line Chart
 
-```
+```scala
 val lines = Seq(
   "a" -> Seq(3.1,6.4,2.3,7.5,5.0,8.9),
   "b" -> Seq(5.4,3.3,7.0,2.7,3.9,5.2)
@@ -40,7 +40,7 @@ LineChart(lines, xValues).draw
 
 ### Bar Chart
 
-```
+```scala
 val data = Seq(
   "a" -> Seq(3.1,6.4,2.3,7.5,5.0,8.9,7.7),
   "b" -> Seq(5.4,3.3,7.0,2.7,3.9,5.2,9.1)
@@ -53,13 +53,13 @@ BarChart(data, xValues).draw
 
 ### Pie Chart
 
-```
+```scala
 PieChart(Seq("a" -> 5, "b" -> 3, "c" -> 11)).draw
 ```
 
 ### Stacked Line Chart
 
-```
+```scala
 val lines = Seq(
   "a" -> Seq(3.1,6.4,2.3,7.5,5.0,8.9),
   "b" -> Seq(5.4,3.3,7.0,2.7,3.9,5.2)
@@ -72,7 +72,7 @@ StackedLineChart(lines, xValues).draw
 
 ### Timeseries Chart
 
-```
+```scala
 import java.time.LocalDate //also works for LocalDateTime
 
 val lines = Seq(
@@ -88,7 +88,7 @@ TimeseriesChart(lines, timeValues).draw
 
 ### XY Line Chart
 
-```
+```scala
 XYLineChart(Seq(
   "a" -> Seq(1 -> 1, 2 -> 2, 3 -> 3, 4 -> 5, 5 -> 8, 6 -> 13),
   "b" -> Seq(5 -> 1, 6 -> 2, 7 -> 3, 8 -> 5, 9 -> 8, 10 -> 13)
